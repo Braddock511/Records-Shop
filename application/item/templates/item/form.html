@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+
+{% block title%}{{ title }}{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-6 display-4">{{ title }}</h1>
+
+<form method="post" action="." enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-4">
+        {{ form.as_p }}
+        {{ imageForm.as_p }}
+    </div>
+
+    {% if form.errors or form.non_field_errors %}
+        <div class="mb-3 p-6 bg-red-100 rounded-xl">
+            {% for field in form %}
+                {{ field.errors }}
+            {% endfor %}
+
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <button class="mt-6 btn btn-success btn-lg">Submit</button>
+</form>
+
+{% endblock %}

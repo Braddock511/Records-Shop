@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+    <ol class="carousel-indicators">
+      <li data-bs-target="#carouselExample" data-bs-slide-to="0" class="active"></li>
+      <li data-bs-target="#carouselExample" data-bs-slide-to="1"></li>
+      <li data-bs-target="#carouselExample" data-bs-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <a href="#">
+            <img src="/media/assets/baner.png" class="d-block w-100" alt="Image 1">
+        </a>
+      </div>
+      <div class="carousel-item">
+        <a href="#">
+            <img src="/media/assets/baner2.png" class="d-block w-100" alt="Image 2">
+        </a>
+      </div>
+      <div class="carousel-item">
+        <a href="#">
+            <img src="/media/assets/baner3.png" class="d-block w-100" alt="Image 3">
+        </a>
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExample" role="button" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExample" role="button" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </a>
+  </div>
+
+<div class="mt-6 px-6 py-12 bg-light rounded-xl">
+    <h2 class="mb-12 text-2xl text-center">Najnowsze oferty</h2>
+    <div class="d-flex justify-content-center">
+        <div class="w-70 row g-3">
+            {% for item in newest_items %}
+                <a href="{% url 'item:detail' item.0.id %}" class="col-lg-4 col-md-6">
+                    <div>
+                        <img src="/media/{{ item.1.url }}" class="rounded-top">
+                    </div>
+
+                    <div class="p-6 bg-white rounded-bottom">
+                        <h2 class="text-2xl">{{ item.0.name }}</h2>
+                        <p class="text-gray-500">Price: {{ item.0.price }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-6 px-6 py-12 bg-light rounded-xl">
+    <h2 class="mb-12 text-2xl text-center">Kategorie</h2>
+
+    <div class="row g-3">
+        {% for category in categories %}
+            <div class="col">
+                <a href="{% url 'item:items' %}?category={{ category.id }}">
+                    <div class="p-6 bg-white rounded-bottom-xl">
+                        <h2 class="text-2xl">{{ category.name }}</h2>
+                        <p class="text-gray-500">{{ category.items.count }} ofert</p>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

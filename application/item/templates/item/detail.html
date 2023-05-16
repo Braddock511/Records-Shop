@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+
+{% block title%}{{ item.name }}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-6">
+        <img id="main-image" src="/media/{{ images.0.url }}" class="rounded-xl img-fluid">
+        <div class="row row-cols-6 gap-3 mt-4">
+            {% for image in images %}
+                <img src="/media/{{ image.url }}" class="subimage rounded-xl img-fluid" onclick="changeIndex('{{ image.url }}')">
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-xl-6 p-4 bg-light rounded-xl">
+        <h1 class="mb-4 text-3xl">{{ item.name }}</h1>
+        <p class="text-gray-500"><strong>Gatunek: </strong>{{ item.genre }}</p>
+        <p class="text-gray-500"><strong>Wytwórnia: </strong>{{ item.label }}</p>
+        <p class="text-gray-500"><strong>Kraj pochodzenia: </strong>{{ item.country }}</p>
+        <p class="text-gray-500"><strong>Rok: </strong>{{ item.year }}</p>
+        <p class="text-gray-500"><strong>Stan płyty: </strong>{{ item.condition }}</p>
+        <p class="text-gray-500"><strong>Sprzedawca: </strong>{{ item.created_by.username }}</p>
+        <p class="fs-2"><strong>{{ item.price }} zł</strong></p>
+
+        {% if request.user == item.created_by %}
+            <div class="mt-4 p-4 bg-white rounded-xl">
+                <p class="text-gray-500"><strong>Karton: </strong>{{ item.carton }}</p>
+                <a href="{% url 'item:edit' item.id %}" class="p-2 w-50 btn btn-primary mt-4">Edytuj</a>
+                <a href="{% url 'item:delete' item.id %}" class="p-2 w-50 btn btn-danger mt-4">Usuń</a>
+            </div>
+        {% else %}  
+            <a href="#" class="btn btn-success mt-6 w-50">Kup</a>
+            <a href="#" class="btn btn-success mt-6 w-50">Dodaj do koszyka</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-6 px-6 py-12 bg-light rounded-xl">
+    <h2 class="mb-4 text-2xl text-center">Oferty, które mogą ci się podobać</h2>
+
+    <div class="row cols-xl-5">
+        {% for item in related_items %}
+            <div class="col">
+                <a href="{% url 'item:detail' item.0.id %}">
+                    <div>
+                        <img src="/media/{{ item.1.url }}" class="rounded-xl img-fluid">
+                    </div>
+
+                    <div class="p-4 bg-white rounded-xl">
+                        <h2 class="text-2xl">{{ item.0.name }}</h2>
+                        <p class="text-gray-500">{{ item.0.price }} zł</p>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+    <script>
+        function changeIndex(url) {
+            var mainImage = document.getElementById('main-image');
+            mainImage.src = "/media/" + url;
+        }
+    </script>
+    <style>
+        .subimage {
+            opacity: 0.95;
+            transition: transform 0.3s;
+        }
+    
+        .subimage:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}

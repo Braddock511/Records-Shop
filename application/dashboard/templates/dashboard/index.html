@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <h2 class="mb-12 text-2xl text-center">Twoje oferty</h2>
+
+    <table class="table table-bordered">
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td style="width: 10%">
+                        <img src="/media/{{ item.1.url }}" class="img-fluid">
+                    </td>
+                    <td>
+                        <a href="{% url 'item:detail' item.0.id %}">
+                                <h2 class="text-xl">{{ item.0.name }}</h2>
+                        </a>
+                    
+                    </td>
+                    <td>
+                        <p class="text-xl">{{ item.0.price }} zł</p>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
