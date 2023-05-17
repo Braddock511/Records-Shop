@@ -6,7 +6,8 @@
 
 <div class="row">
     <div class="col-xl-6">
-        <img id="main-image" src="/media/{{ images.0.url }}" class="rounded-xl img-fluid">
+        {% comment %} <img id="main-image" src="/media/{{ images.0.url }}" class="rounded-xl img-fluid"> {% endcomment %}
+        <img id="main-image" src="/media/{{ images.0.url }}" data-original="/media/{{ images.0.url }}" class="rounded-xl img-fluid">
         <div class="row row-cols-6 gap-3 mt-4">
             {% for image in images %}
                 <img src="/media/{{ image.url }}" class="subimage rounded-xl img-fluid" onclick="changeIndex('{{ image.url }}')">
@@ -57,21 +58,43 @@
         {% endfor %}
     </div>
 </div>
-    <script>
-        function changeIndex(url) {
-            var mainImage = document.getElementById('main-image');
-            mainImage.src = "/media/" + url;
-        }
-    </script>
-    <style>
-        .subimage {
-            opacity: 0.95;
-            transition: transform 0.3s;
-        }
-    
-        .subimage:hover {
-            opacity: 1;
-            cursor: pointer;
-        }
-    </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.1/viewer.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.1/viewer.min.js"></script>
+
+<script>
+    var viewer = new Viewer(document.getElementById('main-image'), {
+        inline: false,
+        viewed: function() {        },
+        toolbar: {
+            zoomIn: true,
+            zoomOut: true,
+            oneToOne: false,
+            rotateLeft: true,
+            rotateRight: true,
+            reset: true,
+        },
+    });
+ 
+    function changeIndex(url) {
+        var mainImage = document.getElementById('main-image');
+        mainImage.src = "/media/" + url;
+    }
+</script>
+<style>
+
+    #main-image{
+        cursor: pointer;
+    }
+
+    .subimage {
+        opacity: 0.95;
+        transition: transform 0.3s;
+    }
+
+    .subimage:hover {
+        opacity: 1;
+        cursor: pointer;
+    }
+</style>
 {% endblock %}
