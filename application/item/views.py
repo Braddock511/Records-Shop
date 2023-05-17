@@ -32,7 +32,7 @@ def items(request):
 def detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     images = Image.objects.filter(item_id=pk)
-    filter_related_items = Item.objects.filter(category=item.category, is_sold=False).exclude(pk=pk)
+    filter_related_items = Item.objects.filter(category=item.category, is_sold=False).exclude(pk=pk)[:6]
     related_images = [Image.objects.filter(item_id=item.pk).first() for item in filter_related_items]
     related_items = zip(filter_related_items, related_images)
     

@@ -6,26 +6,86 @@
 <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
     <h2 class="mb-12 text-2xl text-center">Twoje oferty</h2>
 
-    <table class="table table-bordered">
-        <tbody>
-            {% for item in items %}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        <p class="fs-3">Pogląd</p>
+                    </th>
+                    <th>
+                        <p class="fs-3">Tytuł</p>
+                    </th>
+                    <th>
+                        <p class="fs-3">Cena</p>
+                    </th>
+                    <th>
+                        <p class="fs-3">Karton</p>
+                    </th>
+                    <th>
+                        <p class="fs-3">Edyuj</p>
+                    </th>
+                    <th>
+                        <p class="fs-3">Usuń</p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
                 <tr>
                     <td style="width: 10%">
                         <img src="/media/{{ item.1.url }}" class="img-fluid">
                     </td>
                     <td>
                         <a href="{% url 'item:detail' item.0.id %}">
-                                <h2 class="text-xl">{{ item.0.name }}</h2>
+                            <h2 class="text-xl">{{ item.0.name }}</h2>
                         </a>
-                    
                     </td>
                     <td>
                         <p class="text-xl">{{ item.0.price }} zł</p>
                     </td>
+                    <td>
+                        <p class="text-xl">{{ item.0.carton }}</p>
+                    </td>
+                    <td style="text-align: center">
+                        <a href="{% url 'item:edit' item.0.id %}" class="btn btn-primary">Edytuj</a>
+                    </td>
+                    <td style="text-align: center">
+                        <button type="button" class="btn delete" data-bs-toggle="modal" data-bs-target="#confirmModal{{ item.0.id }}">Usuń</button>
+                    </td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+                <!-- Modal -->
+                <div class="modal fade" id="confirmModal{{ item.0.id }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ item.0.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmModalLabel{{ item.0.id }}">Potwierdzenie usunięcia</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">Czy na pewno chcesz usunąć tę ofertę?</div>
+                            <div class="modal-footer">
+                                <a href="{% url 'item:delete' item.0.id %}" class="btn btn-danger">Usuń</a>
+                                <button type="button" class="btn" data-bs-dismiss="modal">Anuluj</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
+
+<style>
+    td, th{
+        text-align: center;
+    }
+
+    .delete{
+        background-color: #bb2d3b; 
+        color: white;
+    }
+</style>
 {% endblock %}
