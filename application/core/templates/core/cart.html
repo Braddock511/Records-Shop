@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="mb-12 text-2xl text-center">Koszyk</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Zdjęcie</th>
+                            <th scope="col">Produkt</th>
+                            <th scope="col">Cena</th>
+                            <th scope="col">Usuń</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                        <tr>
+                            <td style="width: 10%">
+                                <img src="/media/{{ item.image }}" class="img-fluid">
+                            </td>
+                            <td><a href="{% url 'item:detail' item.id %}">{{ item.name }}</a></td>
+                            <td class="price">{{ item.price }}</td>
+                            <td>
+                                <a href="{% url 'core:remove_from_cart' item.id %}">
+                                    <div style="width: 30px;">
+                                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </div>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        {% endfor %} 
+                    </tbody>
+                </table>
+            {% if cart %}
+                <div class="text-left">
+                    <h4 id="total">Suma: </h4>
+                </div>
+                <a href="{% url 'order:payment' %}" class="btn btn-primary btn-lg mt-4">Płatność</a>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    const items = document.querySelectorAll('.price')
+    let total = 0
+
+    items.forEach(item => {
+        const price = parseFloat(item.innerHTML)
+        total += price
+    });
+
+    const totalElement = document.getElementById('total');
+    totalElement.textContent += total.toFixed(2)
+</script>
+{% endblock %}

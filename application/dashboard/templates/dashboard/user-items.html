@@ -1,0 +1,161 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<form method="get" action="{% url 'dashboard:user-items' %}" class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <div class="row">
+        <div class="col-xl-2">
+            <select name="format" class="form-control mb-3">
+                <option value="">Format płyty</option>
+                <option value="3" {% if format_filter == '3' %}selected{% endif %}>LP</option>
+                <option value="1" {% if format_filter == '1' %}selected{% endif %}>CD</option>
+                <option value="2" {% if format_filter == '2' %}selected{% endif %}>DVD</option>
+            </select>
+        </div>
+        <div class="col-xl-2">
+            <select name="genre" class="form-control mb-3">
+                <option value="">Gatunek</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.0 }}" {% if genre_filter == genre.0 %}selected{% endif %}>{{ genre.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-xl-2">
+            <input name="carton" class="form-control mb-3" type="text" value="{{ carton }}" placeholder="Karton">
+        </div>
+        <div class="col-xl-2">
+            <input name="min_price" class="form-control mb-3" type="number" value="{{ min_price }}" placeholder="Cena minimalna">
+        </div>
+        <div class="col-xl-2">
+            <input name="max_price" class="form-control mb-3" type="number" value="{{ max_price }}" placeholder="Cena maksymalna">
+        </div>
+    </div>
+
+    <input name="offername" class="form-control mb-3" type="text" value="{{ offername }}" placeholder="Znajdź ofertę">
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-success btn-lg">Szukaj</button>
+        </div>
+        <div class="col">
+            <button><a href="{% url 'dashboard:user-items' %}" class="btn btn-warning btn-lg mb-3">Wyczyść filtry</a></button>
+        </div>
+    </div>
+</form>
+
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <div class="flex justify-content-between">
+        <h2 class="mb-12 text-2xl text-center">Twoje oferty</h2>
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center mt-4">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Poprzednia</a>
+                </li>
+                {% endif %}
+        
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+        
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Następna</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        <p class="fs-4">Zdjęcie</p>
+                    </th>
+                    <th>
+                        <p class="fs-4">Tytuł</p>
+                    </th>
+                    <th>
+                        <p class="fs-4">Cena</p>
+                    </th>
+                    <th>
+                        <p class="fs-4">Karton</p>
+                    </th>
+                    <th>
+                        <p class="fs-4">Edytuj</p>
+                    </th>
+                    <th>
+                        <p class="fs-4">Usuń</p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj  %}
+                <tr>
+                    <td style="width: 10%">
+                        <img src="/media/{{ item.1.url }}" class="img-fluid">
+                    </td>
+                    <td>
+                        <a href="{% url 'item:detail' item.0.id %}">
+                            <h2 class="text-xl">{{ item.0.name }}</h2>
+                        </a>
+                    </td>
+                    <td>
+                        <p class="text-xl">{{ item.0.price }} zł</p>
+                    </td>
+                    <td>
+                        <p class="text-xl">{{ item.0.carton }}</p>
+                    </td>
+                    <td style="text-align: center">
+                        <a href="{% url 'item:edit' item.0.id %}" class="btn btn-primary">Edytuj</a>
+                    </td>
+                    <td style="text-align: center">
+                        <button type="button" class="btn delete" data-bs-toggle="modal" data-bs-target="#confirmModal{{ item.0.id }}">Usuń</button>
+                    </td>
+                </tr>
+
+                <!-- Modal -->
+                <div class="modal fade" id="confirmModal{{ item.0.id }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ item.0.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmModalLabel{{ item.0.id }}">Potwierdzenie usunięcia</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">Czy na pewno chcesz usunąć tę ofertę?</div>
+                            <div class="modal-footer">
+                                <a href="{% url 'item:delete' item.0.id %}" class="btn btn-danger">Usuń</a>
+                                <button type="button" class="btn" data-bs-dismiss="modal">Anuluj</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<style>
+    td, th{
+        text-align: center;
+    }
+
+    .delete{
+        background-color: #bb2d3b; 
+        color: white;
+    }
+</style>
+{% endblock %}
