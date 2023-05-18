@@ -69,6 +69,10 @@ class Item(models.Model):
     
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.carton = self.carton.upper()
+        super().save(*args, **kwargs)
     
 class Image(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)

@@ -12,6 +12,9 @@
     <div class="mb-4">
         {{ form.as_p }}
         {{ imageForm.as_p }}
+            <div id="image-preview" class="row row-cols-4 gap-3 mt-4">
+            <!-- Images preview-->
+        </div>
     </div>
 
     {% if form.errors or form.non_field_errors %}
@@ -26,5 +29,30 @@
 
     <button class="mt-6 btn btn-success btn-lg">Submit</button>
 </form>
+
+<script>
+    function previewImages() {
+        let previewContainer = document.getElementById('image-preview')
+        let files = [...document.getElementById('id_image').files]
+        files = files.reverse()
+        previewContainer.innerHTML = ''
+
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i]
+            let reader = new FileReader()
+
+            reader.onload = function (event) {
+                let img = document.createElement('img')
+                img.className = 'preview-image'
+                img.src = event.target.result
+                previewContainer.appendChild(img)
+            }
+
+            reader.readAsDataURL(file)
+        }
+    }
+
+    document.getElementById('id_image').addEventListener('change', previewImages)
+</script>
 
 {% endblock %}
