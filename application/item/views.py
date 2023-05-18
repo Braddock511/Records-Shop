@@ -2,37 +2,64 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from random import randint
 from .forms import NewItemForm, EditItemForm, ImageForm
-from .models import Item, Category, Image
+from .models import Item, Category, Image, GENRES
 
 def items(request):
     filter_items = Item.objects.filter(is_sold=False)
     
-    categories = Category.objects.all()
-    
+    # Name filter
     query = request.GET.get('query', '')
-    category_id = request.GET.get("category", 0)
-    
-    if category_id:
-        filter_items = filter_items.filter(category_id=category_id)
-    
     if query:
         filter_items = filter_items.filter(Q(name__icontains=query))
+    
+    # Format filter
+    format_filter = request.GET.get('format', '')
+
+    if format_filter:
+        filter_items = filter_items.filter(category=format_filter)
+    
+    # Price filter
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+
+    if min_price:
+        filter_items = filter_items.filter(price__gte=min_price)
+
+    if max_price:
+        filter_items = filter_items.filter(price__lte=max_price)
+    
+    # Genre filter
+    genre_filter = request.GET.get('genre', '')
+    if genre_filter:
+        filter_items = filter_items.filter(genre=genre_filter.lower())
         
     images = [Image.objects.filter(item_id=item.pk).first() for item in filter_items]
-    items = zip(filter_items, images)
+    items = list(zip(filter_items, images))
+
+    paginator = Paginator(items, 20)
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
     return render(request, "item/items.html", {
-        "items": items,
+        "page_obj": page_obj,
         "query": query,
-        "categories": categories,
-        "category_id": int(category_id)
+        "format_filter": format_filter,
+        "min_price": min_price,  
+        "max_price": max_price,
+        "genres": GENRES,
+        "genre_filter": genre_filter,
     })    
 
 def detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     images = Image.objects.filter(item_id=pk)
-    filter_related_items = Item.objects.filter(category=item.category, is_sold=False).exclude(pk=pk)[:6]
+    
+    random_offers = randint(0, len(Item.objects.filter(is_sold=False))-6)
+    filter_related_items = Item.objects.filter(category=item.category, is_sold=False).exclude(pk=pk)[random_offers:random_offers+6]
     related_images = [Image.objects.filter(item_id=item.pk).first() for item in filter_related_items]
     related_items = zip(filter_related_items, related_images)
     

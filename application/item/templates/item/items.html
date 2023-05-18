@@ -1,40 +1,89 @@
 {% extends 'core/base.html' %}
 
-{% block title%}Items{% endblock %}
+{% block title%}Oferty{% endblock %}
 
 {% block content %}
 <div class="pb-6 row row-cols-4 g-4 bg-gray-100">
     <div class="col-12 col-md-3">
         <form method="get" action="{% url 'item:items' %}">
-            <input name="query" class="form-control mb-3" type="text" value="{{ query }}" placeholder="Find a record">
-
-            <button class="btn btn-success btn-lg">Search</button>
-        </form>
+            <input name="query" class="form-control mb-3" type="text" value="{{ query }}" placeholder="Tytuł oferty">
 
         <hr class="my-3">
 
-        <p class="font-weight-bold">Categories</p>
+        <p class="font-weight-bold">Formaty</p>
 
-        <ul class="list-unstyled">
-            {% for category in categories %}
-                <li class="py-2 px-2 rounded-xl{% if category.id == category_id %} bg-gray-200{% endif %}">
-                    <a href="{% url 'item:items' %}?query={{ query }}&category={{ category.id }}">{{ category.name }}</a>
-                </li>
+        <select name="format" class="form-control mb-3">
+            <option value="">Format płyty</option>
+            <option value="3" {% if format_filter == '3' %}selected{% endif %}>LP</option>
+            <option value="1" {% if format_filter == '1' %}selected{% endif %}>CD</option>
+            <option value="2" {% if format_filter == '2' %}selected{% endif %}>DVD</option>
+        </select>
+
+        <hr class="my-3">
+        
+        <p class="font-weight-bold">Gatunek</p>
+
+        <select name="genre" class="form-control mb-3">
+            <option value="">Gatunek</option>
+            {% for genre in genres %}
+                <option value="{{ genre.0 }}" {% if genre_filter == genre.0 %}selected{% endif %}>{{ genre.1 }}</option>
             {% endfor %}
-        </ul>
+        </select>
 
         <hr class="my-3">
 
-        <p class="font-weight-bold">Clear filters</p>
+        <p class="font-weight-bold">Cena</p>
 
-        <ul class="list-unstyled">
-            <li><a href="{% url 'item:items' %}" class="btn btn-warning btn-lg mb-3">Clear</a></li>
-        </ul>
+        <div class="col-xl-6">
+            <input name="min_price" class="form-control mb-3" type="number" value="{{ min_price }}" placeholder="Cena minimalna">
+            <input name="max_price" class="form-control mb-3" type="number" value="{{ max_price }}" placeholder="Cena maksymalna">
+        </div>
+
+        </form>
+        <hr class="my-3">
+
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-success btn-lg">Szukaj</button>
+            </div>
+            <div class="col">
+                <button><a href="{% url 'item:items' %}" class="btn btn-warning btn-lg mb-3">Wyczyść filtry</a></button>
+            </div>
+        </div>
     </div>
 
     <div class="col-12 col-md-9">
+        <nav aria-label="Pagination">
+            <ul class="pagination mb-4">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Poprzednia</a>
+                </li>
+                {% endif %}
+        
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+        
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Następna</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
         <div class="row row-cols-3 g-3">
-            {% for item in items %}
+
+
+            {% for item in page_obj %}
                 <div class="col-xl-4">
                     <a href="{% url 'item:detail' item.0.id %}">
                         <div>

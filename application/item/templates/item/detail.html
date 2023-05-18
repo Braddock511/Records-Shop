@@ -28,7 +28,11 @@
             <p class="fs-2"><strong>Karton: </strong>{{ item.carton }}</p>
         {% else %}  
             <a href="#" class="btn btn-success mt-6 w-50">Kup</a>
-            <a href="#" class="btn btn-success mt-6 w-50">Dodaj do koszyka</a>
+            <form method="post" action="{% url 'core:user-cart' %}">
+                {% csrf_token %}
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <button type="submit" class="btn btn-success mt-6 w-50" style="background-color: #198754">Dodaj do koszyka</button>
+            </form>
         {% endif %}
     </div>
 </div>
@@ -58,7 +62,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.1/viewer.min.js"></script>
 
 <script>
-    var viewer = new Viewer(document.getElementById('main-image'), {
+    let viewer = new Viewer(document.getElementById('main-image'), {
         inline: false,
         viewed: function() {        },
         toolbar: {
@@ -72,7 +76,7 @@
     });
  
     function changeIndex(url) {
-        var mainImage = document.getElementById('main-image');
+        let mainImage = document.getElementById('main-image');
         mainImage.src = "/media/" + url;
     }
 </script>
