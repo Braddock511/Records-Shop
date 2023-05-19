@@ -4,8 +4,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from random import randint
-from .forms import NewItemForm, EditItemForm, ImageForm
-from .models import Item, Category, Image, GENRES
+from .forms import NewItemForm, EditItemForm, FileFieldForm
+from django.views.generic.edit import FormView
+from .models import Item, Image, GENRES
+
+MAX_IMAGES = 6
 
 def items(request):
     filter_items = Item.objects.filter(is_sold=False)
@@ -68,32 +71,39 @@ def detail(request, pk):
         "images": images,
         'related_items': related_items
     })
-    
+
+class NewItemFormView(FormView):
+    form_class = NewItemForm
+    success_url = "/"
+
+    def form_valid(self, form):
+        item = form.save(commit=False)
+        item.created_by = self.request.user
+        item.save()
+
+        images = self.request.FILES.getlist("images")
+        for image in images:
+            Image.objects.create(item=item, url=image)
+
+        return super().form_valid(form)
+
 @login_required
 def new_item(request):
     if request.method == "POST":
         form = NewItemForm(request.POST, request.FILES)
-        images = request.FILES.getlist("image")
-        
-        if form.is_valid() and len(images) <= ImageForm.MAX_IMAGES:
-            item = form.save(commit=False)
-            item.created_by = request.user
-            item.save()
-            
-            for image in images:
-                Image.objects.create(item=item, url=image)
-            
-            return redirect("item:detail", pk=item.id)
+        if form.is_valid() and len(request.FILES.getlist("images")) <= MAX_IMAGES:
+            return NewItemFormView.as_view()(request)
         else:
-            image_form = ImageForm()
-            messages.warning(request, "Max 6 images")
+            image_form = FileFieldForm()
+            messages.warning(request, "Maksymalnie 6 zdjęć na ofertę")
     else:
         form = NewItemForm()
-        image_form = ImageForm()
-    
+        image_form = FileFieldForm()
+
     return render(request, 'item/form.html', {
         "form": form,
         "imageForm": image_form,
+        "max_images": MAX_IMAGES,
         "title": "Nowa oferta"
     })
     
@@ -104,9 +114,9 @@ def edit_item(request, pk):
 
     if request.method == "POST":
         form = EditItemForm(request.POST, request.FILES, instance=item)
-        new_images = request.FILES.getlist("image")
+        new_images = request.FILES.getlist("images")
         
-        if form.is_valid():
+        if form.is_valid() and len(request.FILES.getlist("images")) <= MAX_IMAGES:
             form.save()
             
             for image in old_images:
@@ -116,13 +126,18 @@ def edit_item(request, pk):
                 Image.objects.create(item=item, url=image)
             
             return redirect("item:detail", pk=item.id)
+        else:
+            image_form = FileFieldForm()
+            messages.warning(request, "Maksymalnie 6 zdjęć na ofertę")
+        
     else:
         form = EditItemForm(instance=item)
-        image_form = ImageForm()
+        image_form = FileFieldForm()
     
     return render(request, 'item/form.html', {
         "form": form,
         "imageForm": image_form,
+        "max_images": MAX_IMAGES,
         "title": "Edytuj ofertę"
     })
     
@@ -131,4 +146,4 @@ def delete(request, pk):
     item = get_object_or_404(Item, pk=pk, created_by=request.user)
     item.delete()
     
-    return redirect("dashboard:index")
+    return redirect("dashboard:user-items")

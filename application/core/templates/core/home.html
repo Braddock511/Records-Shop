@@ -43,7 +43,7 @@
             {% for item in newest_items %}
                 <a href="{% url 'item:detail' item.0.id %}" class="col-lg-4 col-md-6">
                     <div>
-                        <img src="/media/{{ item.1.url }}" class="rounded-top">
+                        <img src="/media/{{ item.1.url }}" class="rounded-top border border-gray">
                     </div>
 
                     <div class="p-6 bg-white rounded-bottom">

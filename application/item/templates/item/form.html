@@ -33,26 +33,26 @@
 <script>
     function previewImages() {
         let previewContainer = document.getElementById('image-preview')
-        let files = [...document.getElementById('id_image').files]
-        files = files.reverse()
+        let files = [...document.getElementById('id_images').files]
         previewContainer.innerHTML = ''
-
-        for (let i = 0; i < files.length; i++) {
+    
+        for (let i = 0; i < {{ max_images }}; i++) {
             let file = files[i]
             let reader = new FileReader()
-
+    
             reader.onload = function (event) {
                 let img = document.createElement('img')
                 img.className = 'preview-image'
                 img.src = event.target.result
                 previewContainer.appendChild(img)
             }
-
+    
             reader.readAsDataURL(file)
         }
     }
-
-    document.getElementById('id_image').addEventListener('change', previewImages)
+    
+    document.getElementById('id_images').addEventListener('change', previewImages)
+    
 </script>
 
 {% endblock %}

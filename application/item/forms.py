@@ -1,26 +1,28 @@
 from django import forms
-from .models import Item, Image
+from .models import Item
 
 INPUT_CLASSES = 'w-full py-4 px-6 rounded-xl border'
 
-class ImageForm(forms.ModelForm):
-    MAX_IMAGES = 6
-    
-    image = forms.ImageField(
-        label="Images (Max 6)",
-        widget=forms.ClearableFileInput(attrs={"class": INPUT_CLASSES, "multiple": True}),
-    )
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
 
-    class Meta:
-        model = Image
-        fields = ("image",)
-        
-    def clean_image(self):
-        images = self.cleaned_data.get('image')
-        if images:
-            if len(images) > self.MAX_IMAGES:
-                raise forms.ValidationError(f"Please select a maximum of {self.MAX_IMAGES} images.")
-        return images
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
+class FileFieldForm(forms.Form):
+    images = MultipleFileField()
 
 class NewItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
