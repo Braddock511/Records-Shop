@@ -5,8 +5,8 @@
 ![alt text](https://ik.imagekit.io/ybcdqxxka/USING/django-app.png?updatedAt=1684432693118)
 
 # Configuration
-  1. Install needed tools from requirements.txt
-  2. In terminal -> python manage.py runserver
+  1. In terminal -> docker-compose up --build
 # Used tools
 - Django
 - Bootstrap
+- Docker
