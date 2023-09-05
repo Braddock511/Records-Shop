@@ -2,12 +2,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from user_payment.views import stripe_webhook
 
 urlpatterns = [
     path("", include('core.urls')),
-    path("items/", include('item.urls')),
+    path("oferty/", include('item.urls')),
     path("dashboard/", include('dashboard.urls')),
-    path("order/", include('order.urls')),
+    path("payment/", include('user_payment.urls')),
+	path('stripe_webhook', stripe_webhook, name='stripe_webhook'),
+    path("dostawa/", include('delivery.urls')),
     path("admin/", admin.site.urls),
 ] 
 

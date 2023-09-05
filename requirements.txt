@@ -3,3 +3,4 @@ django-paginator==0.2a3
 Pillow==9.3.0
 psycopg2==2.9.3
 psycopg2-binary==2.9.5
+stripe==5.4.0
