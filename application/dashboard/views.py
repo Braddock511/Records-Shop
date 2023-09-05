@@ -7,41 +7,32 @@ from item.models import Item, Image, GENRES
 
 @login_required
 def user_items(request):
-    filter_items = Item.objects.filter(created_by=request.user)[::-1]
+    filter_items = Item.objects.filter(created_by=request.user)
 
     # Name filter
-    name = request.GET.get('offername', '')
-
-    if name:
+    if name := request.GET.get('offername', ''):
         filter_items = filter_items.filter(Q(name__icontains=name))
 
     # Format filter
-    format_filter = request.GET.get('format', '')
-
-    if format_filter:
-        filter_items = filter_items.filter(category=format_filter)
+    if format_filter := request.GET.get('format', ''):
+        filter_items = filter_items.filter(format=format_filter)
         
     # Price filter
-    min_price = request.GET.get('min_price', '')
-    max_price = request.GET.get('max_price', '')
-
-    if min_price:
+    if min_price := request.GET.get('min_price', ''):
         filter_items = filter_items.filter(price__gte=min_price)
 
-    if max_price:
+    if max_price := request.GET.get('max_price', ''):
         filter_items = filter_items.filter(price__lte=max_price)
 
     # Genre filter
-    genre_filter = request.GET.get('genre', '')
-
-    if genre_filter:
-        filter_items = filter_items.filter(genre=genre_filter.lower())
+    if genre_filter := request.GET.get('genre', '').lower():
+        filter_items = filter_items.filter(genre=genre_filter)
 
     # Carton filter
-    carton_filter = request.GET.get('carton', '').upper()
-    if carton_filter:
+    if carton_filter := request.GET.get('carton', '').upper():
         filter_items = filter_items.filter(carton=carton_filter)
 
+    filter_items = filter_items[::-1] # Reverse to the latest offer  
     images = [Image.objects.filter(item_id=item.pk).first() for item in filter_items]
 
     items = list(zip(filter_items, images))

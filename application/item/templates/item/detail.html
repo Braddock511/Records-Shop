@@ -15,13 +15,27 @@
     </div>
 
     <div class="col-xl-6 p-4 bg-light rounded-xl">
-        <h1 class="mb-4 text-3xl">{{ item.name }}</h1>
-        <p class="text-gray-500"><strong>Gatunek: </strong>{{ item.genre }}</p>
-        <p class="text-gray-500"><strong>Wytwórnia: </strong>{{ item.label }}</p>
-        <p class="text-gray-500"><strong>Kraj pochodzenia: </strong>{{ item.country }}</p>
-        <p class="text-gray-500"><strong>Rok: </strong>{{ item.year }}</p>
-        <p class="text-gray-500"><strong>Stan płyty: </strong>{{ item.condition }}</p>
-        <p class="text-gray-500"><strong>Sprzedawca: </strong>{{ item.created_by.username }}</p>
+        <span class="d-flex justify-content-between">
+            <h1 class="mb-4 text-3xl"><strong>{{ item.name }}</strong> </h1>
+            {% comment %} Follow {% endcomment %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'item:favorite' pk=item.pk %}" class="favorite-toggle">
+                    {% if is_followed %}
+                        <img id="fill-heart-icon" src="/media/assets/heart-fill.svg"/>  
+                    {% else %}
+                        <img id="heart-icon" src="/media/assets/heart.svg"/>  
+                    {% endif %}
+                </a>
+            {% else %}
+                <p>Please <a href="{% url 'login' %}">log in</a> to favorite this item.</p>
+            {% endif %}
+        </span>
+        <p class="fs-5">Gatunek: {{ item.genre }}</p>
+        <p class="fs-5">Wytwórnia: {{ item.label }}</p>
+        <p class="fs-5">Kraj pochodzenia: {{ item.country }}</p>
+        <p class="fs-5">Rok: {{ item.year }}</p>
+        <p class="fs-5">Stan płyty: {{ item.condition }}</p>
+        <p class="fs-5">Sprzedawca: {{ item.created_by.username }}</p>
         <p class="fs-2"><strong>{{ item.price }} zł</strong></p>
 
         {% if request.user == item.created_by %}
@@ -35,6 +49,27 @@
             </form>
         {% endif %}
     </div>
+</div>
+
+{% if item.tracklist %}
+    <div class="mt-6 p-4 bg-light rounded-xl">
+        <h2 class="mb-4 text-2xl">Lista utworów</h2>
+        {{ item.tracklist }}
+    </div>
+{% endif %}
+
+
+<div class="mt-6 p-4 bg-light rounded-xl">
+    <h2 class="mb-4 text-2xl">Jak oceniamy płyty</h2>
+    <ul>
+        <li><b>IDEALNY (M)</b> -&nbsp;płyta nowa lub nie odtwarzana, bez najmniejszych śladów użycia.</li>
+        <li><b>NIEMALŻE IDEALNY (M-)</b> - praktycznie idealna, jednak odtwarzana raz lub kilka razy.</li>
+        <li><b>DOSKONAŁY (EX)</b> - odtwarzana, z widoczną niewielką ilością delikatnych rysek lub inną bardzo drobną wadą nie wpływającą na jakość dźwięku.</li>
+        <li><b>BARDZO DOBRY Z PLUSEM (VG+)</b> - bardzo dobry stan, może mieć drobne ryski. Odtwarzana wiele razy, jednak z dużą dbałością.</li>
+        <li><b>BARDZO DOBRY (VG) </b> - nadal całkiem dobry stan, może mieć więcej drobnych rysek, lub może posiadać głębszą rysę. Odtwarzana wiele razy.</li>
+        <li><b>DOBRY</b> <b>(G)</b> - grana bardzo często, może posiadać widoczne głębsze rysy.</li>
+        <li><b>ZŁY</b> <b>(F)</b> - poważniejsze rysy.</li>
+    </ul>
 </div>
 
 <div class="mt-6 px-6 py-12 bg-light rounded-xl">
@@ -62,6 +97,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.1/viewer.min.js"></script>
 
 <script>
+    // Images preview
     let viewer = new Viewer(document.getElementById('main-image'), {
         inline: false,
         viewed: function() {        },
@@ -79,6 +115,14 @@
         let mainImage = document.getElementById('main-image');
         mainImage.src = "/media/" + url;
     }
+
+    // Change color of heart
+    const heartIcon = document.getElementById('heart-icon');
+    const fillHeartIcon = document.getElementById('fill-heart-icon');
+
+    heartIcon.addEventListener('click', function() {
+        heartIcon.style.display = heartIcon.style.display === 'none' ? '' : 'none';
+    });
 </script>
 <style>
 

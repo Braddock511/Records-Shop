@@ -10,15 +10,14 @@ class MultipleFileInput(forms.ClearableFileInput):
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, required=False, **kwargs)
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
         if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
+            return [single_file_clean(d, initial) for d in data]
         else:
-            result = single_file_clean(data, initial)
-        return result
+            return single_file_clean(data, initial)
 
 
 class FileFieldForm(forms.Form):
@@ -33,13 +32,13 @@ class NewItemForm(forms.ModelForm):
         
     class Meta:
         model = Item
-        fields = ('name', 'category', 'label', 'country', 'year', 'genre', 'condition', 'price', 'carton')
+        fields = ('name', 'format', 'label', 'country', 'year', 'genre', 'condition', 'price', 'carton')
         
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': INPUT_CLASSES,
             }),
-            'category': forms.Select(attrs={
+            'format': forms.Select(attrs={
                 'class': INPUT_CLASSES
             }),
             'label': forms.TextInput(attrs={
@@ -74,13 +73,13 @@ class NewItemForm(forms.ModelForm):
 class EditItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ('name', 'category', 'label', 'country', 'year', 'genre', 'condition', 'price', 'carton')
+        fields = ('name', 'format', 'label', 'country', 'year', 'genre', 'condition', 'price', 'carton')
         
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
             }),
-            'category': forms.Select(attrs={
+            'format': forms.Select(attrs={
                 'class': INPUT_CLASSES
             }),
             'label': forms.TextInput(attrs={
@@ -95,14 +94,14 @@ class EditItemForm(forms.ModelForm):
                 'class': INPUT_CLASSES,
                 "required": False
             }),
-            'genre': forms.TextInput(attrs={
+            'genre': forms.Select(attrs={
                 'class': INPUT_CLASSES
             }),
             'condition': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
             }),
-            'image': forms.FileInput(attrs={
-                'class': INPUT_CLASSES
+            'image': forms.ClearableFileInput(attrs={
+                'class': INPUT_CLASSES,
             }),
             'price': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
@@ -111,4 +110,23 @@ class EditItemForm(forms.ModelForm):
                 'class': INPUT_CLASSES
             }),
         }
+
+class EditItemsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['price'].required = False
+        self.fields['carton'].required = False
         
+    class Meta:
+        model = Item
+        fields = ('price', 'carton')
+        
+        widgets = {
+            'price': forms.TextInput(attrs={
+                'class': INPUT_CLASSES
+            }),
+            'carton': forms.TextInput(attrs={
+                'class': INPUT_CLASSES
+            }),
+        }
+  

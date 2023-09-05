@@ -3,7 +3,10 @@
 {% block title %}Koszyk{% endblock %}
 
 {% block content %}
-<div class="container">
+{% for item in favorite_items %}
+    {{ item }}
+{% endfor %}
+{% comment %} <div class="container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
             {% if cart %}
@@ -49,18 +52,6 @@
             {% endif %}
         </div>
     </div>
-</div>
+</div> {% endcomment %}
 
-<script>
-    const items = document.querySelectorAll('.price')
-    let total = 0
-
-    items.forEach(item => {
-        const price = parseFloat(item.innerHTML)
-        total += price
-    });
-
-    const totalElement = document.getElementById('total');
-    totalElement.textContent += total.toFixed(2)
-</script>
 {% endblock %}

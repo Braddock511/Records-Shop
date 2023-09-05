@@ -8,12 +8,15 @@
 
 <form method="post" action="." enctype="multipart/form-data">
     {% csrf_token %}
-
     <div class="mb-4">
         {{ form.as_p }}
         {{ imageForm.as_p }}
-            <div id="image-preview" class="row row-cols-4 gap-3 mt-4">
-            <!-- Images preview-->
+        <div id="image-preview" class="row row-cols-4 gap-3 mt-4">
+            {% for image in imageForm.images.value %}
+                <div class="col">
+                    <img src="/media/{{ image.url }}" alt="Image Preview" class="img-fluid">
+                </div>
+            {% endfor %}
         </div>
     </div>
 
@@ -26,8 +29,8 @@
             {{ form.non_field_errors }}
         </div>
     {% endif %}
-
-    <button class="mt-6 btn btn-success btn-lg">Submit</button>
+    
+    <button class="mt-6 btn btn-success btn-lg">Wystaw</button>
 </form>
 
 <script>
@@ -51,7 +54,11 @@
         }
     }
     
-    document.getElementById('id_images').addEventListener('change', previewImages)
+    let id_images = document.getElementById('id_images')
+    if (id_images)
+    {
+        id_images.addEventListener('change', previewImages)
+    } 
     
 </script>
 

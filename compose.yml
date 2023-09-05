@@ -9,6 +9,11 @@ services:
       - POSTGRES_PASSWORD=admin
   web:
     build: .
+    environment: 
+      - STRIPE_PUBLIC_KEY_TEST= 
+      - STRIPE_SECRET_KEY_TEST= 
+      - STRIPE_WEBHOOK_SECRET_TEST= 
+      - PRODUCT_PRICE=
     command: python application/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app/

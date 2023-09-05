@@ -4,6 +4,7 @@
 
 {% block content %}
 <form method="get" action="{% url 'dashboard:user-items' %}" class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <p class="fs-3 mb-3">Filtry</p>
     <div class="row">
         <div class="col-xl-2">
             <select name="format" class="form-control mb-3">
@@ -34,19 +35,13 @@
 
     <input name="offername" class="form-control mb-3" type="text" value="{{ offername }}" placeholder="Znajdź ofertę">
 
-    <div class="row">
-        <div class="col">
-            <button class="btn btn-success btn-lg">Szukaj</button>
-        </div>
-        <div class="col">
-            <button><a href="{% url 'dashboard:user-items' %}" class="btn btn-warning btn-lg mb-3">Wyczyść filtry</a></button>
-        </div>
-    </div>
+    <button class="btn btn-success btn-lg">Szukaj</button>
+    <button><a href="{% url 'dashboard:user-items' %}" class="btn btn-success btn-lg">Wyczyść</a></button>
 </form>
 
 <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
     <div class="flex justify-content-between">
-        <h2 class="mb-12 text-2xl text-center">Twoje oferty</h2>
+        <h2 class="mb-12 fs-3 text-center">Twoje oferty</h2><br>
         <nav aria-label="Pagination">
             <ul class="pagination justify-content-center mt-4">
                 {% if page_obj.has_previous %}
@@ -81,6 +76,9 @@
             <thead>
                 <tr>
                     <th>
+                        <p class="fs-4">Oferta</p>
+                    </th>
+                    <th>
                         <p class="fs-4">Zdjęcie</p>
                     </th>
                     <th>
@@ -100,9 +98,19 @@
                     </th>
                 </tr>
             </thead>
+            <form method="POST" action="{% url 'item:edit-offers' %}">
+                {% csrf_token %}
+                <div id="edit-items" style="display: none;">
+                    <input id="new-carton" name="new-carton" class="form-control mb-3" type="text" placeholder="Zmień karton">
+                    <input id="new-price" name="new-price" class="form-control mb-3" type="text" placeholder="Zmień cenę">
+                    <button type="submit" class="btn btn-success btn-lg mb-3" style="background-color: #157347">Edytuj wybrane</button>
+                </div>
             <tbody>
                 {% for item in page_obj  %}
                 <tr>
+                    <td>
+                        <input class="form-check-input" type="checkbox" name="selected-id-items" value="{{ item.0.id }}" id="checkbox">
+                    </td>
                     <td style="width: 10%">
                         <img src="/media/{{ item.1.url }}" class="img-fluid">
                     </td>
@@ -144,9 +152,45 @@
                 {% endfor %}
             </tbody>
         </table>
+    </form>
+
     </div>
 </div>
 
+<script>
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const editItems = document.getElementById('edit-items');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            if (checkedCheckboxes.length > 0) {
+                editItems.style.display = 'block';
+            } else {
+                editItems.style.display = 'none';
+            }
+        });
+    });
+
+    function handleCheckboxClick(e) {
+        let inBetween = false;
+        if (e.shiftKey && this.checked) {
+          checkboxes.forEach(checkbox => {
+            if (checkbox === this || checkbox === lastChecked) {
+              inBetween = !inBetween;
+            }
+      
+            if (inBetween) {
+              checkbox.checked = true;
+            }
+          });
+        }
+        
+        lastChecked = this;
+      }
+      
+    checkboxes.forEach(checkbox => checkbox.addEventListener('click', handleCheckboxClick));
+</script>
 
 <style>
     td, th{

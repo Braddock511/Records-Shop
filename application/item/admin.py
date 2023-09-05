@@ -1,6 +1,5 @@
 from django.contrib import admin
+from .models import Format, Item
 
-from .models import Category, Item
-
-admin.site.register(Category)
+admin.site.register(Format)
 admin.site.register(Item)

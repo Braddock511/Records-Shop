@@ -12,50 +12,46 @@ CONDITONS = (
 )
 
 GENRES = (
-    ('ballad', 'Ballad'),
-    ('blues', 'Blues, Rhythm\'n\'Blues'),
-    ('country', 'Country'),
-    ('dance', 'Dance'),
-    ('disco', 'Disco polo, Party, Karaoke'),
-    ('children', 'For children'),
-    ('ethno', 'Ethno, Folk, World music'),
-    ('jazz', 'Jazz, Swing'),
-    ('carols', 'Christmas carols'),
-    ('metal', 'Metal'),
-    ('alternative', 'Alternative music'),
-    ('electronic', 'Electronic music'),
-    ('film', 'Film music'),
-    ('classical', 'Classical music'),
-    ('religious', 'Religious music, retreat'),
-    ('new', 'New sounds'),
-    ('opera', 'Opera, Operetta'),
-    ('pop', 'Pop'),
-    ('rap', 'Rap, Hip-Hop'),
-    ('reggae', 'Reggae, Ska'),
-    ('rock', 'Rock'),
-    ('rock_and_roll', 'Rock\'n\'roll'),
-    ('single', 'Singles'),
-    ('compilations', 'Compilations'),
-    ('soul', 'Soul, Funk'),
-    ('synth_pop', 'Synth-pop'),
-    ('other', 'Other'),
-    ('sets', 'Sets, packages'),
+    ('Ballada', 'Ballada'),
+    ('Blues, Rhythm\'n\'Blues', 'Blues, Rhythm\'n\'Blues'),
+    ('Country', 'Country'),
+    ('Dance', 'Dance'),
+    ('Disco polo, Party, Karaoke', 'Disco polo, Party, Karaoke'),
+    ('Dla dzieci', 'Dla dzieci'),
+    ('Ethno, Folk, World music', 'Ethno, Folk, World music'),
+    ('Jazz, Swing', 'Jazz, Swing'),
+    ('Kolędy', 'Kolędy'),
+    ('Metal', 'Metal'),
+    ('Muzyka alternatywna', 'Muzyka alternatywna'),
+    ('Muzyka elektroniczna', 'Muzyka elektroniczna'),
+    ('Muzyka filmowa', 'Muzyka filmowa'),
+    ('Muzyka klasyczna', 'Muzyka klasyczna'),
+    ('Muzyka religijna', 'Muzyka religijna'),
+    ('Nowe brzmienia', 'Nowe brzmienia'),
+    ('Opera, Operetka', 'Opera, Operetka'),
+    ('Pop', 'Pop'),
+    ('Rap, Hip-Hop', 'Rap, Hip-Hop'),
+    ('Reggae, Ska', 'Reggae, Ska'),
+    ('Rock', 'Rock'),
+    ('Rock\'n\'roll', 'Rock\'n\'roll'),
+    ('Single', 'Single'),
+    ('Składanki', 'Składanki'),
+    ('Soul, Funk', 'Soul, Funk'),
+    ('Synth-pop', 'Synth-pop'),
+    ('Pozostałe', 'Pozostałe'),
+    ('Zestawy, pakiety', 'Zestawy, pakiety'),
     
 )
 
-class Category(models.Model):
+class Format(models.Model):
     name = models.CharField(max_length=255)
     
-    class Meta:
-        ordering = ("name",)
-        verbose_name_plural = "Categories"
-        
     def __str__(self) -> str:
         return self.name
 
 class Item(models.Model):
     name = models.CharField(max_length=255)
-    category = models.ForeignKey(Category, related_name="items", on_delete=models.CASCADE, default="Vinyl")
+    format = models.ForeignKey(Format, related_name="items", on_delete=models.CASCADE, default=1)
     label = models.CharField(max_length=255, null=True, default="-")
     country = models.CharField(max_length=255, null=True, default="-")
     year = models.CharField(max_length=255, null=True, default="-")
@@ -77,3 +73,6 @@ class Item(models.Model):
 class Image(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     url = models.ImageField(upload_to='item_images', null=False, blank=False)
+    
+class FavoriteItem(models.Model):
+    item_id = models.ForeignKey(Item, null=False, blank=False, on_delete=models.CASCADE)

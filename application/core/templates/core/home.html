@@ -57,15 +57,15 @@
 </div>
 
 <div class="mt-6 px-6 py-12 bg-light rounded-xl">
-    <h2 class="mb-12 text-2xl text-center">Kategorie</h2>
+    <h2 class="mb-12 text-2xl text-center">Formaty</h2>
 
     <div class="row g-3">
-        {% for category in categories %}
+        {% for format in formats %}
             <div class="col">
-                <a href="{% url 'item:items' %}?category={{ category.id }}">
+                <a href="{% url 'item:items' %}?format={{ format.id }}">
                     <div class="p-6 bg-white rounded-bottom-xl">
-                        <h2 class="text-2xl">{{ category.name }}</h2>
-                        <p class="text-gray-500">{{ category.items.count }} ofert</p>
+                        <h2 class="text-2xl">{{ format.name }}</h2>
+                        <p class="text-gray-500">{{ format.items.count }} ofert</p>
                     </div>
                 </a>
             </div>
