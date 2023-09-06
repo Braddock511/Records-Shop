@@ -1,4 +1,4 @@
-Django==4.2.1
+Django==4.2.5
 django-paginator==0.2a3
 Pillow==9.3.0
 psycopg2==2.9.3
