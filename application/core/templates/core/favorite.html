@@ -1,16 +1,13 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Koszyk{% endblock %}
+{% block title %}Ulubione{% endblock %}
 
 {% block content %}
-{% for item in favorite_items %}
-    {{ item }}
-{% endfor %}
-{% comment %} <div class="container">
+<div class="container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            {% if cart %}
-                <h1 class="mb-12 text-2xl text-center">Koszyk</h1>
+            {% if follow_count %}
+                <h1 class="mb-12 text-2xl text-center">Ulubione</h1>
                     <table class="table">
                         <thead>
                             <tr>
@@ -21,15 +18,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in cart %}
+                            {% for item in favorite_items %}
                             <tr>
                                 <td style="width: 10%">
-                                    <img src="/media/{{ item.image }}" class="img-fluid">
+                                    <img src="/media/{{ item.1.url }}" class="img-fluid">
                                 </td>
-                                <td><a href="{% url 'item:detail' item.id %}">{{ item.name }}</a></td>
-                                <td class="price">{{ item.price }}</td>
+                                <td><a href="{% url 'item:detail' item.0.id %}">{{ item.0.name }}</a></td>
+                                <td class="price">{{ item.0.price }}</td>
                                 <td>
-                                    <a href="{% url 'core:remove_from_cart' item.id %}">
+                                    <a href="{% url 'item:favorite' item.0.id %}">
                                         <div style="width: 30px;">
                                             <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
@@ -42,16 +39,12 @@
                             {% endfor %} 
                         </tbody>
                     </table>
-                    <div class="text-left">
-                        <h4 id="total">Suma: </h4>
-                    </div>
-                    <a href="{% url 'payment:product_page' %}" class="btn btn-primary btn-lg mt-4">Płatność</a>
             
             {% else %}
-                <h1 class="mb-12 text-2xl text-center">Twój koszyk jest pusty</h1>
+                <h1 class="mb-12 text-2xl text-center">Nie masz ulubionych produktów</h1>
             {% endif %}
         </div>
     </div>
-</div> {% endcomment %}
+</div>
 
 {% endblock %}

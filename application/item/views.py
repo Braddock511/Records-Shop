@@ -185,7 +185,7 @@ def delete(request, pk):
     return redirect("dashboard:user-items")
 
 @login_required
-def favorite(request, pk):
+def toggle_favorite(request, pk):
     item = Item.objects.get(pk=pk)  
 
     try:

@@ -1,4 +1,3 @@
-import json
 from django.shortcuts import render, redirect, get_object_or_404
 from item.models import Format, Item, Image, FavoriteItem
 from .forms import SingupFrom
@@ -8,12 +7,10 @@ def home(request):
     images = [Image.objects.filter(item_id=item.pk).first() for item in items]
     newest_items = zip(items, images)
     formats = Format.objects.all()
-    count = len(request.session['cart']) if 'cart' in request.session else 0
 
     return render(request, 'core/home.html', {
         'formats': formats,
         'newest_items': newest_items,
-        'count': count
     })
 
 def contact(request):
@@ -43,7 +40,6 @@ def cart(request):
         
     return render(request, 'core/cart.html', {
         'cart': request.session['cart'],
-        'count': len(request.session['cart'])
     })
 
 
@@ -73,7 +69,11 @@ def remove_from_cart(request, item_id):
     return redirect('core:user-cart')
 
 def favorite(request):
-    favorite_items = FavoriteItem.objects.all()
+    favorite_ids = FavoriteItem.objects.all()
+    favorite = [item.item_id for item in favorite_ids]
+    images = [Image.objects.filter(item_id=item.item_id).first() for item in favorite_ids]
+
+    favorite_items = zip(favorite, images)
     
     return render(request, 'core/favorite.html', {
         'favorite_items': favorite_items,

@@ -49,6 +49,9 @@
                         <a href="{% url 'core:favorite' %}" class="text-lg font-semibold">
                             <span class="relative">
                                 <img src="/media/assets/heart.svg" class="icon w-100" alt="Heart">
+                                {% if follow_count > 0 %}
+                                    <span class="absolute -bottom-2 -right-1 text-xs bg-red-500 text-white px-1 rounded-full">{{ follow_count }}</span>
+                                {% endif %}
                             </span>
                         </a>
 
@@ -61,8 +64,8 @@
                         <a href="{% url 'core:user-cart' %}" class="text-lg font-semibold">
                             <span class="relative">
                                 <img src="/media/assets/cart.svg" class="icon w-100" alt="Cart">
-                                {% if count > 0 %}
-                                    <span class="absolute -bottom-2 -right-2 text-xs bg-red-500 text-white px-1 rounded-full">{{ count }}</span>
+                                {% if cart_count > 0 %}
+                                    <span class="absolute -bottom-2 -right-2 text-xs bg-red-500 text-white px-1 rounded-full">{{ cart_count }}</span>
                                 {% endif %}
                             </span>
                         </a>
