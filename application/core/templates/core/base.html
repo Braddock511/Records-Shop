@@ -22,7 +22,7 @@
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <nav class="py-6 px-6 navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <nav class="py-6 px-6 navbar navbar-expand-lg navbar-light bg-light border-bottom rounded-xl">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <form action="{% url 'item:items' %}" method="GET" class="title flex mb-3">
                 <a href="/" class="navbar-brand text-xl font-semibold">Records shop</a>
@@ -36,6 +36,11 @@
                 {% if request.user.is_authenticated %}
 
                     {% if request.user.is_staff %}
+                        <a href="{% url 'chat:chat-admin' %}" class="text-lg font-semibold">                            
+                            <span class="relative">
+                                <img src="/media/assets/chat.svg" class="icon w-100" alt="Chat">
+                            </span>
+                        </a>
                         <a href="{% url 'dostawa:parcels' %}" class="text-lg font-semibold">Zamówienia</a>
                         <a href="{% url 'item:new-item' %}" class="text-lg font-semibold">Wystaw ofertę</a>
                         <a href="{% url 'dashboard:user-items' %}" class="text-lg font-semibold">Twoje oferty</a>
@@ -55,7 +60,7 @@
                             </span>
                         </a>
 
-                        <a href="{% url 'core:user-cart' %}" class="text-lg font-semibold">
+                        <a href="{% url 'chat:chat' %}" class="text-lg font-semibold">
                             <span class="relative">
                                 <img src="/media/assets/chat.svg" class="icon w-100" alt="Chat">
                             </span>

@@ -9,6 +9,7 @@ urlpatterns = [
     path("oferty/", include('item.urls')),
     path("dashboard/", include('dashboard.urls')),
     path("payment/", include('user_payment.urls')),
+    path("chat/", include('chat.urls')),
 	path('stripe_webhook', stripe_webhook, name='stripe_webhook'),
     path("dostawa/", include('delivery.urls')),
     path("admin/", admin.site.urls),

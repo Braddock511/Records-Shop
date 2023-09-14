@@ -73,7 +73,7 @@ def detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     images = Image.objects.filter(item_id=pk)
     
-    random_offers = randint(0, len(Item.objects.filter(is_sold=False))-6)
+    random_offers = randint(0, len(Item.objects.filter(is_sold=False))-6) if len(Item.objects.filter(is_sold=False)) > 6 else 0
     filter_related_items = Item.objects.filter(format=item.format, is_sold=False).exclude(pk=pk)[random_offers:random_offers+6]
     related_images = [Image.objects.filter(item_id=item.pk).first() for item in filter_related_items]
     related_items = zip(filter_related_items, related_images)

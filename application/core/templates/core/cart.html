@@ -61,6 +61,8 @@
     });
 
     const totalElement = document.getElementById('total');
-    totalElement.textContent += total.toFixed(2)
+    if (totalElement){
+        totalElement.textContent += total.toFixed(2)
+    }
 </script>
 {% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Czat{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Basic Chat
+                </div>
+                <div class="card-body chat-container">
+                    <!-- Chat messages will be displayed here -->
+                </div>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
+                        <div class="input-group-append">
+                            <button id="send-button" class="btn btn-primary">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let chatName = ''
+    let chatSocket = null
+    let chatWindowUrl = window.location.href
+    let chatRoomUuid = Math.random().toString(36).slice(2, 12)
+    
+    const connect = document.querySelector("#connect")
+    const sendButton = document.querySelector("#send-button")
+    const chatInput = document.querySelector("#message-input")
+    const chatContainer = document.querySelector(".chat-container")
+    
+    function sendMessage(){
+        chatSocket.send(JSON.stringify({
+            'type': 'message',
+            'message': chatInput.value,
+            'name': chatName,
+        }))
+    
+        chatInput.value = ''
+    }
+    
+    function onChatMessage(data){
+        data = JSON.parse(data)
+    
+        if (data.type == 'chat_message'){
+            if (data.agent){
+    
+            } else{
+                console.log(data)
+                chatContainer.innerHTML += `<div>${data.message}</div>${data.created_at}`
+            }
+        }
+    }
+    
+    function getCookie(name){
+        let cookieValue = null
+    
+        if(document.cookie && document.cookie != ''){
+            let cookies = document.cookie.split(";")
+    
+            for (let i = 0; i < cookies.length; i++){
+                let cookie = cookies[i].trim()
+    
+                if(cookie.substring(0, name.length + 1) === (name + "=")){
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                    break
+                }
+            }
+    
+            return cookieValue
+        }
+    }
+    
+    async function joinChatRoom(){
+        const data = new FormData()
+        chatName = "test"
+    
+        data.append("name", chatName)
+        data.append("url", chatWindowUrl)
+    
+        await fetch(`/chat/create-room/${chatRoomUuid}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: data
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+        })
+    
+        chatSocket = new WebSocket(`ws://${window.location.host}/ws/${chatRoomUuid}/`);
+    
+        chatSocket.onopen = (e) => {
+            console.log('WebSocket connection opened:', e);
+        };
+    
+        chatSocket.onmessage = (e) => {
+            onChatMessage(e.data);
+        };
+    
+        chatSocket.onclose = (e) => {
+            console.log('WebSocket connection closed:', e);
+        };
+    
+        chatSocket.onerror = (e) => {
+            console.error('WebSocket error:', e);
+        };
+    }
+    
+    
+    sendButton.onclick = (e) => {
+        sendMessage()
+    }
+    
+    joinChatRoom()
+</script>
+
+{% endblock %}
+
